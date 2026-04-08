@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Open ExerciseDB - Searchable Demo</title>
+  <title>Open ExerciseDB – Free Open-Source Fitness Exercise Database (JSON)</title>
+
+<meta name="description" content="Open ExerciseDB is a free open-source fitness exercise database with 300+ exercises in clean JSON format. Includes muscles, equipment, difficulty levels, and more. Perfect for fitness apps, AI tools, and trainers.">
   <style>
     body { font-family: system-ui, sans-serif; margin: 0; padding: 20px; background: #f8f9fa; }
     h1 { text-align: center; color: #222; }
@@ -15,9 +17,48 @@
     .tags { margin-top: 8px; }
     .tag { background: #e0f0ff; color: #0066cc; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 4px; }
   </style>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "Open ExerciseDB",
+  "description": "Free open-source fitness exercise database with 1000+ exercises in JSON format including muscles, equipment, and difficulty levels.",
+  "url": "https://demo.glowupp.org",
+  "sameAs": [
+    "https://github.com/Glowupp-app/open-exercisedb"
+  ],
+  "license": "https://opensource.org/licenses/MIT",
+  "creator": {
+    "@type": "Organization",
+    "name": "Glowupp",
+    "url": "https://glowupp.org"
+  },
+  "distribution": {
+    "@type": "DataDownload",
+    "contentUrl": "https://raw.githubusercontent.com/Glowupp-app/open-exercisedb/main/exercises.json",
+    "encodingFormat": "application/json"
+  }
+}
+</script>
 </head>
 <body>
-  <h1>Open ExerciseDB</h1>
+  <section style="max-width:900px;margin:0 auto 24px auto;color:#333;">
+  <h1>Open ExerciseDB – Free Open-Source Fitness Exercise Database</h1>
+
+  <p>
+    Open ExerciseDB is a free, open-source fitness exercise database with over
+    <strong>1000 structured exercises</strong> in clean JSON format.
+    Each exercise includes primary and secondary muscles, equipment types,
+    difficulty level, and execution tips.
+  </p>
+
+  <p>
+    This searchable demo lets you explore the dataset instantly.
+    The full dataset is available on
+    <a href="https://github.com/Glowupp-app/open-exercisedb" target="_blank">GitHub</a>
+    under the MIT license.
+  </p>
+</section>
   <input type="text" id="search" placeholder="Search exercises (e.g. squat, plank, machine...)" autofocus>
 
   <div class="results" id="results"></div>
@@ -106,7 +147,6 @@
 
     renderExercises(filtered);
   });
-
   // Load exercises when page opens
   loadExercises();
 </script>
