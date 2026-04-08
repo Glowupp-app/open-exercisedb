@@ -64,7 +64,8 @@ data/exercises_final_english.json → Main clean dataset (recommended)
 schema.json → Full JSON schema for validation
 
 How to Use
-Filter examples:
+Filter examples
+```python
 # All machine exercises for legs
 machine_leg_ex = [ex for ex in exercises 
                   if any("machine" in eq for eq in ex["equipment"]) 
@@ -73,7 +74,7 @@ machine_leg_ex = [ex for ex in exercises
 # Core exercises with difficulty 7+
 hard_core = [ex for ex in exercises 
              if ex["primary_muscle"] == "Abs / Core" and ex["difficulty"] >= 7]
-
+```
 Contributing
 New exercises (especially machines and cable variations) are very welcome!
 
