@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open ExerciseDB – Free Open-Source Fitness Exercise Database (JSON)</title>
+
+<meta name="description" content="Open ExerciseDB is a free open-source fitness exercise database with 300+ exercises in clean JSON format. Includes muscles, equipment, difficulty levels, and more. Perfect for fitness apps, AI tools, and trainers.">
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 20px; background: #f8f9fa; }
+    h1 { text-align: center; color: #222; }
+    input { width: 100%; max-width: 600px; padding: 12px; font-size: 18px; margin: 20px auto; display: block; border: 2px solid #ddd; border-radius: 8px; }
+    .results { max-width: 900px; margin: 0 auto; }
+    .exercise { background: white; padding: 16px; margin: 12px 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .exercise h3 { margin: 0 0 8px 0; color: #0066cc; }
+    .meta { font-size: 0.9em; color: #555; }
+    .tags { margin-top: 8px; }
+    .tag { background: #e0f0ff; color: #0066cc; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 4px; }
+  </style>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "Open ExerciseDB",
+  "description": "Free open-source fitness exercise database with 300+ exercises in JSON format including muscles, equipment, and difficulty levels.",
+  "url": "https://demo.glowupp.org",
+  "sameAs": [
+    "https://github.com/Glowupp-app/open-exercisedb"
+  ],
+  "license": "https://opensource.org/licenses/MIT",
+  "creator": {
+    "@type": "Organization",
+    "name": "Glowupp",
+    "url": "https://glowupp.org"
+  },
+  "distribution": {
+    "@type": "DataDownload",
+    "contentUrl": "https://raw.githubusercontent.com/Glowupp-app/open-exercisedb/main/exercises.json",
+    "encodingFormat": "application/json"
+  }
+}
+</script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "Open ExerciseDB",
+  "codeRepository": "https://github.com/Glowupp-app/open-exercisedb",
+  "programmingLanguage": "JSON",
+  "license": "https://opensource.org/licenses/MIT",
+  "author": {
+    "@type": "Organization",
+    "name": "Glowupp",
+    "url": "https://glowupp.org"
+  }
+}
+</script>
+</head>
+<body>
+  <section style="max-width:900px;margin:0 auto 24px auto;color:#333;">
+  <h1>Open ExerciseDB – Free Open-Source Fitness Exercise Database</h1>
+
+  <p>
+    Open ExerciseDB is a free, open-source fitness exercise database with over
+    <strong>300 structured exercises</strong> in clean JSON format.
+    Each exercise includes primary and secondary muscles, equipment types,
+    difficulty level, and execution tips.
+  </p>
+
+  <p>
+    This searchable demo lets you explore the dataset instantly.
+    The full dataset is available on
+    <a href="https://github.com/Glowupp-app/open-exercisedb" target="_blank">GitHub</a>
+    under the MIT license.
+  </p>
+</section>
+  <input type="text" id="search" placeholder="Search exercises (e.g. squat, plank, machine...)" autofocus>
+
+  <div class="results" id="results"></div>
+
+  <script>
+  let exercises = [];
+  const resultsContainer = document.getElementById('results');
+  const searchInput = document.getElementById('search');
+
+  async function loadExercises() {
+    resultsContainer.innerHTML = '<p style="text-align:center; color:#0066cc;">Loading exercises...</p>';
+
+    try {
+      // Try both possible locations
+      let response = await fetch('exercises.json');
+      
+      if (!response.ok) {
+        response = await fetch('data/exercises.json');
+      }
+
+      if (response.ok) {
+        exercises = await response.json();
+        console.log(`✅ Successfully loaded ${exercises.length} exercises`);
+        renderExercises(exercises);
+      } else {
+        throw new Error('File not found');
+      }
+    } catch (error) {
+      console.error(error);
+      resultsContainer.innerHTML = `
+        <p style="text-align:center; color:#cc0000;">
+          ❌ Could not load exercises.json<br><br>
+          Please make sure the file is named <strong>exercises.json</strong> and is in the root folder 
+          or inside a <code>data/</code> folder.
+        </p>`;
+    }
+  }
+
+  function renderExercises(filtered) {
+    resultsContainer.innerHTML = '';
+
+    if (filtered.length === 0) {
+      resultsContainer.innerHTML = '<p style="text-align:center; color:#666;">No exercises found. Try different keywords (e.g. squat, plank, push, machine).</p>';
+      return;
+    }
+
+    filtered.forEach(ex => {
+      const div = document.createElement('div');
+      div.className = 'exercise';
+      div.innerHTML = `
+        <h3>${ex.name || 'Unnamed Exercise'}</h3>
+        <p class="meta">
+          <strong>Difficulty:</strong> ${ex.difficulty || '?'} &nbsp;&nbsp; 
+          <strong>Primary Muscle:</strong> ${ex.primary_muscle || '—'} &nbsp;&nbsp; 
+          <strong>Equipment:</strong> ${Array.isArray(ex.equipment) ? ex.equipment.join(', ') : '—'}
+        </p>
+        <p>${(ex.description || '').substring(0, 180)}${(ex.description || '').length > 180 ? '...' : ''}</p>
+        <div class="tags">
+          ${Array.isArray(ex.equipment) ? ex.equipment.map(eq => `<span class="tag">${eq}</span>`).join('') : ''}
+        </div>
+      `;
+      resultsContainer.appendChild(div);
+    });
+  }
+
+  // Live search as you type
+  searchInput.addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase().trim();
+
+    if (!term) {
+      renderExercises(exercises);
+      return;
+    }
+
+    const filtered = exercises.filter(ex => {
+      const name = (ex.name || '').toLowerCase();
+      const desc = (ex.description || '').toLowerCase();
+      const primary = (ex.primary_muscle || '').toLowerCase();
+      const equip = Array.isArray(ex.equipment) ? ex.equipment.join(' ').toLowerCase() : '';
+
+      return name.includes(term) || 
+             desc.includes(term) || 
+             primary.includes(term) || 
+             equip.includes(term);
+    });
+
+    renderExercises(filtered);
+  });
+  // Load exercises when page opens
+  loadExercises();
+</script>
+</body>
+</html>
