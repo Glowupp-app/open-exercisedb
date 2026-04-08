@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fitness Exercise Schema",
+  "description": "Standard schema for the Open Fitness Exercise Database",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier (slug) of the exercise, lowercase with underscores"
+    },
+    "name": {
+      "type": "string",
+      "description": "Full name of the exercise"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the exercise"
+    },
+    "difficulty": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Difficulty level from 1 (easiest) to 10 (hardest)"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["strength", "cardio", "mobility", "stretching", "power"],
+      "description": "Main category of the exercise"
+    },
+    "equipment": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of equipment required (e.g. 'bodyweight', 'dumbbell', 'machine', 'cable', 'barbell', etc.)"
+    },
+    "primary_muscle": {
+      "type": "string",
+      "description": "Main muscle group targeted"
+    },
+    "secondary_muscles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of secondary muscles worked"
+    },
+    "muscle_intensity": {
+      "type": "object",
+      "description": "Intensity ratings for different muscle groups (P = Primary, S = Secondary, T = Tertiary)",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "calories_per_kg_per_hour": {
+      "type": "number",
+      "description": "Estimated calories burned per kg of bodyweight per hour"
+    },
+    "typical_sets_reps": {
+      "type": "string",
+      "description": "Recommended sets and reps (e.g. '3x10-12', '3x45 seconds')"
+    },
+    "execution_tips": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of tips for proper execution"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Optional tags for easier searching (e.g. 'core', 'unilateral', 'compound')"
+    }
+  },
+  "required": ["id", "name", "description", "difficulty", "category", "equipment", "primary_muscle"],
+  "additionalProperties": false
+}
