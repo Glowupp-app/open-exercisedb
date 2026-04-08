@@ -27,43 +27,40 @@
   const resultsContainer = document.getElementById('results');
   const searchInput = document.getElementById('search');
 
-  // Try multiple possible JSON paths
-  const possiblePaths = [
-    'exercises.json',
-    'data/exercises.json',
-    './data/exercises.json'
-  ];
-
   async function loadExercises() {
     resultsContainer.innerHTML = '<p style="text-align:center; color:#0066cc;">Loading exercises...</p>';
 
-    for (let path of possiblePaths) {
-      try {
-        const response = await fetch(path);
-        if (response.ok) {
-          exercises = await response.json();
-          console.log(`✅ Loaded ${exercises.length} exercises from ${path}`);
-          renderExercises(exercises);
-          return;
-        }
-      } catch (e) {
-        // Try next path
+    try {
+      // Try both possible locations
+      let response = await fetch('exercises.json');
+      
+      if (!response.ok) {
+        response = await fetch('data/exercises.json');
       }
-    }
 
-    // If all paths failed
-    resultsContainer.innerHTML = `
-      <p style="text-align:center; color:#cc0000;">
-        ❌ Could not load exercises.json<br>
-        Please make sure the file is in the repository root or in a <code>data/</code> folder.
-      </p>`;
+      if (response.ok) {
+        exercises = await response.json();
+        console.log(`✅ Successfully loaded ${exercises.length} exercises`);
+        renderExercises(exercises);
+      } else {
+        throw new Error('File not found');
+      }
+    } catch (error) {
+      console.error(error);
+      resultsContainer.innerHTML = `
+        <p style="text-align:center; color:#cc0000;">
+          ❌ Could not load exercises.json<br><br>
+          Please make sure the file is named <strong>exercises.json</strong> and is in the root folder 
+          or inside a <code>data/</code> folder.
+        </p>`;
+    }
   }
 
   function renderExercises(filtered) {
     resultsContainer.innerHTML = '';
 
     if (filtered.length === 0) {
-      resultsContainer.innerHTML = '<p style="text-align:center; color:#666;">No exercises found. Try different keywords.</p>';
+      resultsContainer.innerHTML = '<p style="text-align:center; color:#666;">No exercises found. Try different keywords (e.g. squat, plank, push, machine).</p>';
       return;
     }
 
@@ -73,8 +70,8 @@
       div.innerHTML = `
         <h3>${ex.name || 'Unnamed Exercise'}</h3>
         <p class="meta">
-          <strong>Difficulty:</strong> ${ex.difficulty || '?'} | 
-          <strong>Primary:</strong> ${ex.primary_muscle || '—'} | 
+          <strong>Difficulty:</strong> ${ex.difficulty || '?'} &nbsp;&nbsp; 
+          <strong>Primary Muscle:</strong> ${ex.primary_muscle || '—'} &nbsp;&nbsp; 
           <strong>Equipment:</strong> ${Array.isArray(ex.equipment) ? ex.equipment.join(', ') : '—'}
         </p>
         <p>${(ex.description || '').substring(0, 180)}${(ex.description || '').length > 180 ? '...' : ''}</p>
@@ -86,10 +83,10 @@
     });
   }
 
-  // Real-time search
+  // Live search as you type
   searchInput.addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase().trim();
-    
+
     if (!term) {
       renderExercises(exercises);
       return;
@@ -110,7 +107,7 @@
     renderExercises(filtered);
   });
 
-  // Load on page start
+  // Load exercises when page opens
   loadExercises();
 </script>
 </body>
