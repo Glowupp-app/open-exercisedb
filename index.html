@@ -23,56 +23,95 @@
   <div class="results" id="results"></div>
 
   <script>
-    let exercises = [];
+  let exercises = [];
+  const resultsContainer = document.getElementById('results');
+  const searchInput = document.getElementById('search');
 
-    fetch('exercises_final_english.json')
-      .then(response => response.json())
-      .then(data => {
-        exercises = data;
-        renderExercises(data);
-      });
+  // Try multiple possible JSON paths
+  const possiblePaths = [
+    'exercises_final_english.json',
+    'data/exercises_final_english.json',
+    './data/exercises_final_english.json'
+  ];
 
-    function renderExercises(filtered) {
-      const container = document.getElementById('results');
-      container.innerHTML = '';
+  async function loadExercises() {
+    resultsContainer.innerHTML = '<p style="text-align:center; color:#0066cc;">Loading exercises...</p>';
 
-      if (filtered.length === 0) {
-        container.innerHTML = '<p style="text-align:center; color:#666;">No exercises found.</p>';
-        return;
+    for (let path of possiblePaths) {
+      try {
+        const response = await fetch(path);
+        if (response.ok) {
+          exercises = await response.json();
+          console.log(`✅ Loaded ${exercises.length} exercises from ${path}`);
+          renderExercises(exercises);
+          return;
+        }
+      } catch (e) {
+        // Try next path
       }
-
-      filtered.forEach(ex => {
-        const div = document.createElement('div');
-        div.className = 'exercise';
-        div.innerHTML = `
-          <h3>${ex.name}</h3>
-          <p class="meta"><strong>Difficulty:</strong> ${ex.difficulty} | 
-                          <strong>Primary:</strong> ${ex.primary_muscle} | 
-                          <strong>Equipment:</strong> ${ex.equipment.join(', ')}</p>
-          <p>${ex.description.substring(0, 180)}...</p>
-          <div class="tags">
-            ${ex.equipment.map(eq => `<span class="tag">${eq}</span>`).join('')}
-            ${ex.primary_muscle ? `<span class="tag">${ex.primary_muscle}</span>` : ''}
-          </div>
-        `;
-        container.appendChild(div);
-      });
     }
 
-    document.getElementById('search').addEventListener('input', (e) => {
-      const term = e.target.value.toLowerCase().trim();
-      if (!term) {
-        renderExercises(exercises);
-        return;
-      }
-      const filtered = exercises.filter(ex => 
-        ex.name.toLowerCase().includes(term) ||
-        (ex.description && ex.description.toLowerCase().includes(term)) ||
-        (ex.primary_muscle && ex.primary_muscle.toLowerCase().includes(term)) ||
-        ex.equipment.some(eq => eq.toLowerCase().includes(term))
-      );
-      renderExercises(filtered);
+    // If all paths failed
+    resultsContainer.innerHTML = `
+      <p style="text-align:center; color:#cc0000;">
+        ❌ Could not load exercises.json<br>
+        Please make sure the file is in the repository root or in a <code>data/</code> folder.
+      </p>`;
+  }
+
+  function renderExercises(filtered) {
+    resultsContainer.innerHTML = '';
+
+    if (filtered.length === 0) {
+      resultsContainer.innerHTML = '<p style="text-align:center; color:#666;">No exercises found. Try different keywords.</p>';
+      return;
+    }
+
+    filtered.forEach(ex => {
+      const div = document.createElement('div');
+      div.className = 'exercise';
+      div.innerHTML = `
+        <h3>${ex.name || 'Unnamed Exercise'}</h3>
+        <p class="meta">
+          <strong>Difficulty:</strong> ${ex.difficulty || '?'} | 
+          <strong>Primary:</strong> ${ex.primary_muscle || '—'} | 
+          <strong>Equipment:</strong> ${Array.isArray(ex.equipment) ? ex.equipment.join(', ') : '—'}
+        </p>
+        <p>${(ex.description || '').substring(0, 180)}${(ex.description || '').length > 180 ? '...' : ''}</p>
+        <div class="tags">
+          ${Array.isArray(ex.equipment) ? ex.equipment.map(eq => `<span class="tag">${eq}</span>`).join('') : ''}
+        </div>
+      `;
+      resultsContainer.appendChild(div);
     });
-  </script>
+  }
+
+  // Real-time search
+  searchInput.addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase().trim();
+    
+    if (!term) {
+      renderExercises(exercises);
+      return;
+    }
+
+    const filtered = exercises.filter(ex => {
+      const name = (ex.name || '').toLowerCase();
+      const desc = (ex.description || '').toLowerCase();
+      const primary = (ex.primary_muscle || '').toLowerCase();
+      const equip = Array.isArray(ex.equipment) ? ex.equipment.join(' ').toLowerCase() : '';
+
+      return name.includes(term) || 
+             desc.includes(term) || 
+             primary.includes(term) || 
+             equip.includes(term);
+    });
+
+    renderExercises(filtered);
+  });
+
+  // Load on page start
+  loadExercises();
+</script>
 </body>
 </html>
