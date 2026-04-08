@@ -1,6 +1,6 @@
 # open-exercisedb
 
-A free, open-source collection of **500+ exercises** (and growing) with detailed information: difficulty, primary/secondary muscles, equipment (including machines), video links, execution tips, and more.
+A free, open-source collection of **300+ exercises** (and growing) with detailed information: difficulty, primary/secondary muscles, equipment (including machines), execution tips, and more.
 
 Perfect for fitness apps, workout generators, trainers, researchers, or anyone building fitness tools.
 
@@ -9,7 +9,6 @@ Perfect for fitness apps, workout generators, trainers, researchers, or anyone b
 - Clean, consistent JSON schema
 - Supports **bodyweight, dumbbells, barbells, machines, cables, resistance bands**, etc.
 - Muscle intensity ratings (P/S/T scale)
-- Direct video URLs for most exercises
 - Easy to filter by muscle, equipment, difficulty, or category
 - Actively maintained and open for contributions
 
