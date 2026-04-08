@@ -3,7 +3,7 @@
   "@context": "https://schema.org",
   "@type": "Dataset",
   "name": "Open ExerciseDB - Free Fitness Exercise Database",
-  "description": "Comprehensive open-source JSON dataset with 1000+ fitness exercises. Includes primary & secondary muscles, difficulty level, equipment (bodyweight + machines), muscle intensity ratings, execution tips, and more. Perfect for workout generators, fitness apps, AI tools, and trainers.",
+  "description": "Comprehensive open-source JSON dataset with 300+ fitness exercises. Includes primary & secondary muscles, difficulty level, equipment (bodyweight + machines), muscle intensity ratings, execution tips, and more. Perfect for workout generators, fitness apps, AI tools, and trainers.",
   "url": "https://github.com/Glowupp-app/open-exercisedb",
   "license": "https://opensource.org/licenses/MIT",
   "keywords": [
