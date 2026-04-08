@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open ExerciseDB - Searchable Demo</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 20px; background: #f8f9fa; }
+    h1 { text-align: center; color: #222; }
+    input { width: 100%; max-width: 600px; padding: 12px; font-size: 18px; margin: 20px auto; display: block; border: 2px solid #ddd; border-radius: 8px; }
+    .results { max-width: 900px; margin: 0 auto; }
+    .exercise { background: white; padding: 16px; margin: 12px 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .exercise h3 { margin: 0 0 8px 0; color: #0066cc; }
+    .meta { font-size: 0.9em; color: #555; }
+    .tags { margin-top: 8px; }
+    .tag { background: #e0f0ff; color: #0066cc; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Open ExerciseDB</h1>
+  <input type="text" id="search" placeholder="Search exercises (e.g. squat, plank, machine...)" autofocus>
+
+  <div class="results" id="results"></div>
+
+  <script>
+    let exercises = [];
+
+    fetch('exercises_final_english.json')
+      .then(response => response.json())
+      .then(data => {
+        exercises = data;
+        renderExercises(data);
+      });
+
+    function renderExercises(filtered) {
+      const container = document.getElementById('results');
+      container.innerHTML = '';
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#666;">No exercises found.</p>';
+        return;
+      }
+
+      filtered.forEach(ex => {
+        const div = document.createElement('div');
+        div.className = 'exercise';
+        div.innerHTML = `
+          <h3>${ex.name}</h3>
+          <p class="meta"><strong>Difficulty:</strong> ${ex.difficulty} | 
+                          <strong>Primary:</strong> ${ex.primary_muscle} | 
+                          <strong>Equipment:</strong> ${ex.equipment.join(', ')}</p>
+          <p>${ex.description.substring(0, 180)}...</p>
+          <div class="tags">
+            ${ex.equipment.map(eq => `<span class="tag">${eq}</span>`).join('')}
+            ${ex.primary_muscle ? `<span class="tag">${ex.primary_muscle}</span>` : ''}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    document.getElementById('search').addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase().trim();
+      if (!term) {
+        renderExercises(exercises);
+        return;
+      }
+      const filtered = exercises.filter(ex => 
+        ex.name.toLowerCase().includes(term) ||
+        (ex.description && ex.description.toLowerCase().includes(term)) ||
+        (ex.primary_muscle && ex.primary_muscle.toLowerCase().includes(term)) ||
+        ex.equipment.some(eq => eq.toLowerCase().includes(term))
+      );
+      renderExercises(filtered);
+    });
+  </script>
+</body>
+</html>
