@@ -1,6 +1,6 @@
 # Open ExerciseDB
 
-**Free open-source fitness exercise database** with **1000+ exercises** in clean, consistent JSON format.
+**Free open-source fitness exercise database** with **300+ exercises** in clean, consistent JSON format.
 
 Includes difficulty, primary & secondary muscles, equipment (bodyweight + machines + cables + more), muscle intensity ratings, execution tips, and more.
 
